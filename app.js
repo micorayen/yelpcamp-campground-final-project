@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
+// YelpCamp 2nd Update: ==========
+const ejsMate = require("ejs-mate");
 
 // Import exported-models/products:
 const Campground = require("./models/campground");
@@ -18,6 +20,8 @@ db.once("open", () => {
   console.log("Database connected.");
 });
 
+// use ejs-locals for all ejs templates:
+app.engine("ejs", ejsMate);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
