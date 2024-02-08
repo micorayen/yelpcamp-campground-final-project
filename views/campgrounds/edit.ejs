@@ -7,6 +7,8 @@
     <form
       action="/campgrounds/<%= foundCampground._id %>?_method=PUT"
       method="POST"
+      novalidate
+      class="validated-form"
     >
       <div class="mb-3">
         <label class="form-label" for="title">Title: </label>
@@ -17,7 +19,9 @@
           id="title"
           placeholder="Enter Title"
           value="<%= foundCampground.title %>"
+          required
         />
+        <div class="valid-feedback">Please enter a valid campground title.</div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="location">Location: </label>
@@ -28,7 +32,11 @@
           id="location"
           placeholder="campground location"
           value="<%= foundCampground.location %>"
+          required
         />
+        <div class="invalid-feedback">
+          Please provide a valid campground location.
+        </div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="image">Image (URL): </label>
@@ -39,7 +47,9 @@
           id="image"
           placeholder="Enter Image (URL)"
           value="<%= foundCampground.image %>"
+          required
         />
+        <div class="invalid-feedback">Please enter a valid image URL.</div>
       </div>
       <div class="mb-3">
         <label class="form-label" for="price">Campground Price: </label>
@@ -55,7 +65,11 @@
             aria-label="price"
             aria-describedby="price-label"
             value="<%= foundCampground.price %>"
+            required
           />
+          <div class="invalid-feedback">
+            Please enter a valid price for the campground.
+          </div>
         </div>
       </div>
 
@@ -69,9 +83,13 @@
           cols="10"
           rows="5"
           placeholder="Put Description Here:"
+          required
         >
         <%= foundCampground.description %></textarea
         >
+        <div class="invalid-feedback">
+          Please enter a description for the campground.
+        </div>
       </div>
 
       <div class="mb-3">
