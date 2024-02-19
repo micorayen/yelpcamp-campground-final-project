@@ -5,15 +5,17 @@ const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
 const flash = require("connect-flash");
-// const { campgroundSchema, reviewSchema } = require("./schemas");
 const ExpressError = require("./utils/ExpressError");
+const methodOverride = require("method-override");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+
+const User = require("./models/user");
 
 // Import routes for campgrounds and reviews
-const campgrounds = require("./routes/campgrounds");
-const reviews = require("./routes/reviews");
-
-// Method-Override Package:
-const methodOverride = require("method-override");
+const userRoutes = require("./routes/users");
+const campgroundRoutes = require("./routes/campgrounds");
+const reviewRoutes = require("./routes/reviews");
 
 // MongoDB Connection:
 mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp", {});
@@ -45,15 +47,34 @@ const sessionConfig = {
 };
 app.use(session(sessionConfig));
 app.use(flash());
+
+// Passport:
+app.use(passport.initialize());
+app.use(passport.session());
+// Doc: https://github.com/saintedlama/passport-local-mongoose#readme (Static methods)
+passport.use(new LocalStrategy(User.authenticate())); // where Authentication
+passport.serializeUser(User.serializeUser()); // Strored Data
+passport.deserializeUser(User.deserializeUser()); // Un-Strored Data
+app.get("/fakeUser", async (req, res) => {
+  const user = new User({ email: "mico@gmail.com", username: "micorayen" });
+
+  const newUser = await User.register(user, "password1");
+  res.send(newUser); // 'pbkdf2 algorithm' - for hash
+});
+
+// Locals - have access for all templates
 app.use((req, res, next) => {
+  console.log(req.session);
+  res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
 });
 
 // Set up middleware for handling routes
-app.use("/campgrounds", campgrounds);
-app.use("/campgrounds/:id/reviews", reviews);
+app.use("/", userRoutes);
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/reviews", reviewRoutes);
 
 /// CAMPGROUND ROUTES:
 // --------------------
